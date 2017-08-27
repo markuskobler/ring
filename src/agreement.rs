@@ -115,6 +115,13 @@ impl<'a> EphemeralPrivateKey {
         Ok(EphemeralPrivateKey { private_key, alg })
     }
 
+    /// from_bytes
+    pub fn from_bytes(alg: &'static Algorithm, bytes: untrusted::Input)
+                      -> Result<EphemeralPrivateKey, error::Unspecified> {
+        let private_key = ec::PrivateKey::from_bytes(&alg.i.curve, bytes)?;
+        Ok(EphemeralPrivateKey { private_key, alg })
+    }
+
     /// The key exchange algorithm.
     #[inline]
     pub fn algorithm(&self) -> &'static Algorithm { self.alg }
@@ -141,6 +148,11 @@ impl<'a> EphemeralPrivateKey {
     #[cfg(test)]
     pub fn bytes(&'a self, curve: &ec::Curve) -> &'a [u8] {
         self.private_key.bytes(curve)
+    }
+
+    /// as_bytes
+    pub fn as_bytes(&'a self) -> &'a [u8] {
+        self.private_key.bytes(self.alg.i.curve)
     }
 }
 
